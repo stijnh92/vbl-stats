@@ -31,6 +31,7 @@ class API:
             "WQVer": self.wq_version,
             "CRUD": self.crud_method
         }
+
     def cache_key(self, endpoint, data):
         # Compose cache key based on the endpoint and the data
         return endpoint + '_' + json.dumps(data)
@@ -38,7 +39,7 @@ class API:
     def put(self, endpoint, data):
         # First check the cache before executing the call.
         cache_key = self.cache_key(endpoint, data)
-        result = self.check_cache(cache_key)
+        result = self.get_cache(cache_key)
         if result:
             return result
 
@@ -50,15 +51,15 @@ class API:
         )
         result = response.json()
 
-        self.store_cache(cache_key, json.dumps(result))
+        self.set_cache(cache_key, result)
         return result
 
-    def check_cache(self, key):
+    def get_cache(self, key):
         value = self.redis.get(key)
         return json.loads(value) if value else value
 
-    def store_cache(self, key, value):
-        self.redis.set(key, value)
+    def set_cache(self, key, value):
+        self.redis.set(key, json.dumps(value))
 
     def get_game(self, game_id: str):
         return self.put(self.GAME_ENDPOINT, {
