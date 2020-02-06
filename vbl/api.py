@@ -2,6 +2,7 @@ import json
 import redis
 import requests
 
+
 class API:
     BASE_URL = 'https://vblcb.wisseq.eu/VBLCB_WebService/data/'
     GAME_ENDPOINT = 'DwfVgngByWedGuid'
@@ -32,14 +33,10 @@ class API:
             "CRUD": self.crud_method
         }
 
-    def cache_key(self, endpoint, data):
-        # Compose cache key based on the endpoint and the data
-        return endpoint + '_' + json.dumps(data)
-
     def put(self, endpoint, data):
         # First check the cache before executing the call.
-        cache_key = self.cache_key(endpoint, data)
-        result = self.get_cache(cache_key)
+        key = cache_key(endpoint, data)
+        result = self.get_cache(key)
         if result:
             return result
 
@@ -51,7 +48,7 @@ class API:
         )
         result = response.json()
 
-        self.set_cache(cache_key, result)
+        self.set_cache(key, result)
         return result
 
     def get_cache(self, key):
@@ -70,3 +67,8 @@ class API:
         return self.put(self.TEAMS_ENDPOINT, {
             "WedGUID": game_id,
         })
+
+
+def cache_key(endpoint, data):
+    # Compose cache key based on the endpoint and the data
+    return endpoint + '_' + json.dumps(data)
