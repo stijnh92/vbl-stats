@@ -9,4 +9,5 @@ chardet==3.0.4            # via requests
 idna==2.8                 # via requests
 redis==3.4.1
 requests==2.22.0
+texttable==1.6.2
 urllib3==1.25.8           # via requests

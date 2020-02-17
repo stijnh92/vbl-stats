@@ -1,5 +1,5 @@
-import json
-import redis
+from .utils import cached
+
 import requests
 
 
@@ -12,13 +12,11 @@ class API:
     crud_method: str
     wq_version: str
     base_url: str
-    redis: redis.Redis
 
     def __init__(self):
         self.wq_version = 'ddc1.0'
         self.authorization_header = 'na'
         self.crud_method = 'R'
-        self.redis = redis.Redis(host='localhost', port=6379, db=0)
 
     def get_headers(self):
         return {
@@ -33,30 +31,15 @@ class API:
             "CRUD": self.crud_method
         }
 
+    @cached
     def put(self, endpoint, data):
-        # First check the cache before executing the call.
-        key = cache_key(endpoint, data)
-        result = self.get_cache(key)
-        if result:
-            return result
-
         data.update(self.get_base_payload())
         response = requests.put(
             self.BASE_URL + endpoint,
             json=data,
             headers=self.get_headers()
         )
-        result = response.json()
-
-        self.set_cache(key, result)
-        return result
-
-    def get_cache(self, key):
-        value = self.redis.get(key)
-        return json.loads(value) if value else value
-
-    def set_cache(self, key, value):
-        self.redis.set(key, json.dumps(value))
+        return response.json()
 
     def get_game(self, game_id: str):
         return self.put(self.GAME_ENDPOINT, {
@@ -67,8 +50,3 @@ class API:
         return self.put(self.TEAMS_ENDPOINT, {
             "WedGUID": game_id,
         })
-
-
-def cache_key(endpoint, data):
-    # Compose cache key based on the endpoint and the data
-    return endpoint + '_' + json.dumps(data)
