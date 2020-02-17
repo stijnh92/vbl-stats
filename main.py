@@ -67,14 +67,24 @@ def get_player_stats(game):
         if event['GebType'] != 10:
             continue
 
+        print(event)
         points = int(event['Text'].split(' ')[0])
         player['score'] += points
         if points == 1:
             player['ft'] += 1
+        elif points == -1:
+            player['ft'] -= 1
+
         elif points == 2:
             player['2p'] += 1
-        else:
+        elif points == -2:
+            player['2p'] -= 1
+
+        elif points == 3:
             player['3p'] += 1
+        elif points == -3:
+            player['3p'] -= 1
+
 
         players.update({
             player_id: player
@@ -144,7 +154,7 @@ def get_score_for_player(player):
 
 if __name__ == '__main__':
     vbl_api = vbl.api.API()
-    game_id = 'BVBL19209120LIHSE31AIG'
+    game_id = 'BVBL19209120LIHSE41AIG'
     home_team, away_team = get_teams_with_players(game_id)
     player_stats = get_player_stats(game_id)
 
