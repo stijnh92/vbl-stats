@@ -48,4 +48,4 @@ def print_table(rows):
         ["Nr", "Name", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT'],
         *rows
     ])
-    print(table.draw() + "\n")
+    print(table.draw())
