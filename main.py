@@ -67,7 +67,6 @@ def get_player_stats(game):
         if event['GebType'] != 10:
             continue
 
-        print(event)
         points = int(event['Text'].split(' ')[0])
         player['score'] += points
         if points == 1:
@@ -154,7 +153,7 @@ def get_score_for_player(player):
 
 if __name__ == '__main__':
     vbl_api = vbl.api.API()
-    game_id = 'BVBL19209120LIHSE41AIG'
+    game_id = 'BVBL19209120LIHSE31AIG'
     home_team, away_team = get_teams_with_players(game_id)
     player_stats = get_player_stats(game_id)
 
