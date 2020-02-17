@@ -1,13 +1,16 @@
 from functools import wraps
 
 import json
-import redis
+from redis import Redis
+from texttable import Texttable
 
-redis = redis.Redis(host='localhost', port=6379, db=0)
 
 def cache_key(endpoint, data):
-    # Compose cache key based on the endpoint and the data
+    """
+    Compose cache key based on the endpoint and the data
+    """
     return endpoint + '_' + json.dumps(data)
+
 
 def cached(func):
     """
@@ -19,6 +22,8 @@ def cached(func):
         # Generate the cache key from the function's arguments.
         _, endpoint, data = list(args)
         key = cache_key(endpoint, data)
+
+        redis = Redis(host='localhost', port=6379, db=0)
         result = redis.get(key)
 
         if result is None:
@@ -33,3 +38,14 @@ def cached(func):
         return value
 
     return wrapper
+
+
+def print_table(rows):
+    table = Texttable()
+    table.set_cols_align(["r", "l", "r", "r", "r", "r", "r", "r", "r"])
+
+    table.add_rows([
+        ["Nr", "Name", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT'],
+        *rows
+    ])
+    print(table.draw() + "\n")
