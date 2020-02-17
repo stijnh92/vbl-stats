@@ -12,8 +12,8 @@ def get_teams_with_players(game):
             player = Player(**_player)
             team.add_player(player)
 
-    home = Team('home')
-    away = Team('away')
+    home = Team(game_details['teamThuisNaam'])
+    away = Team(game_details['teamUitNaam'])
 
     result = vbl_api.get_teams_from_game(game)
     get_players(home, result['TtDeel'])
@@ -67,7 +67,7 @@ def get_player_stats(game):
         elif event.is_foul():
             player['fouls'] = player.get('fouls', 0) + 1
             penalty = 0
-            if event.content == 'P1':
+            if event.content in ('P1', 'T1'):
                 penalty = 1
             if event.content == 'P2':
                 penalty = 2
@@ -136,6 +136,7 @@ def print_results(team):
         sum(x[7] for x in rows)
     ])
 
+    print(team.name)
     print_table(rows)
     print('Free Throws: {0}/{1} = {2}%'.format(ft_made, team.ft_attempts, int((ft_made / team.ft_attempts) * 100)))
     print('')
@@ -172,6 +173,7 @@ def get_free_throws_allowed(team: Team):
 if __name__ == '__main__':
     vbl_api = vbl.api.API()
     game_id = 'BVBL19209120LIHSE31AIG'
+    game_details = vbl_api.get_game_info(game_id)
     home_team, away_team = get_teams_with_players(game_id)
     player_stats = get_player_stats(game_id)
 

@@ -5,6 +5,7 @@ import requests
 
 class API:
     BASE_URL = 'https://vblcb.wisseq.eu/VBLCB_WebService/data/'
+    GAME_INFO_ENDPOINT = 'MatchByWedGuid'
     GAME_ENDPOINT = 'DwfVgngByWedGuid'
     TEAMS_ENDPOINT = 'DwfDeelByWedGuid'
 
@@ -40,6 +41,19 @@ class API:
             headers=self.get_headers()
         )
         return response.json()
+
+    @cached
+    def get(self, endpoint, parameters):
+        response = requests.get(
+            self.BASE_URL + endpoint,
+            parameters
+        )
+        return response.json()
+
+    def get_game_info(self, game_id: str):
+        return self.get(self.GAME_INFO_ENDPOINT, {
+            "issguid": game_id,
+        })[0]['doc']
 
     def get_game(self, game_id: str):
         return self.put(self.GAME_ENDPOINT, {
