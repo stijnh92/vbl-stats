@@ -113,8 +113,7 @@ def print_results(team):
     for player in team.players:
         stats = get_score_for_player(player)
         rows.append([
-            player.number,
-            player.name,
+            player,
             stats['score'],
             stats['total_minutes'],
             stats['ppm'],
@@ -124,18 +123,17 @@ def print_results(team):
             stats.get('3p', 0)
         ])
 
-    ft_made = sum(x[6] for x in rows)
+    ft_made = sum(x[5] for x in rows)
     # Add totals row
     rows.append([
-        "",
         "Total",
+        sum(x[1] for x in rows),
         sum(x[2] for x in rows),
-        sum(x[3] for x in rows),
         "",
-        sum(x[5] for x in rows),
+        sum(x[4] for x in rows),
         ft_made,
-        sum(x[7] for x in rows),
-        sum(x[8] for x in rows)
+        sum(x[6] for x in rows),
+        sum(x[7] for x in rows)
     ])
 
     print_table(rows)

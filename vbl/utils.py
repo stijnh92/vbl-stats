@@ -42,10 +42,10 @@ def cached(func):
 
 def print_table(rows):
     table = Texttable()
-    table.set_cols_align(["r", "l", "r", "r", "r", "r", "r", "r", "r"])
+    table.set_cols_align(["l", "r", "r", "r", "r", "r", "r", "r"])
 
     table.add_rows([
-        ["Nr", "Name", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT'],
+        ["Player", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT'],
         *rows
     ])
     print(table.draw())
