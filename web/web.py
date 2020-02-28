@@ -1,10 +1,18 @@
+from flask import Flask, render_template
+from flask import request
+
 from vbl import api, utils
 
+app = Flask(__name__)
 
-if __name__ == '__main__':
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
+
+@app.route('/game/<game_id>')
+def game(game_id):
     vbl_api = api.API()
 
-    game_id = 'BVBL19209120LIHSE31AEG'
     game_details = vbl_api.get_game_info(game_id)
     game_events = vbl_api.get_game(game_id)['GebNis']
     game_teams = vbl_api.get_teams_from_game(game_id)
@@ -18,5 +26,4 @@ if __name__ == '__main__':
     home_team_details = utils.summarize_results(home_team, player_stats)
     away_team_details = utils.summarize_results(away_team, player_stats)
 
-    utils.print_results(home_team, home_team_details)
-    utils.print_results(away_team, away_team_details)
+    return render_template('game.html', home=home_team_details, away=away_team_details)

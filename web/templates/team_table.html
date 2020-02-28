@@ -1,0 +1,25 @@
+<table class="table table-striped table-sm">
+    <thead>
+    <tr>
+        <th>Player</th>
+        <th>Pts.</th>
+        <th>Min.</th>
+        <th>Pts./Min.</th>
+        <th>Fouls</th>
+        <th>FT</th>
+        <th>2PT</th>
+        <th>3PT</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in details %}
+    <tr>
+        {% for i in range(0, 8) %}
+        <td>
+            {{ row[i] }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
