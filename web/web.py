@@ -1,3 +1,7 @@
+import datetime
+import time
+from pytz import timezone
+
 from flask import Flask, render_template
 from flask import request
 
@@ -8,6 +12,12 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+
+
+@app.template_filter('timestamp_to_hours')
+def timestamp_to_hours(s):
+    date = datetime.datetime.fromtimestamp(s/1000.0)
+    return date.astimezone(timezone('UTC')).strftime('%H:%M')
 
 @app.route('/game/<game_id>')
 def game(game_id):
@@ -26,4 +36,15 @@ def game(game_id):
     home_team_details = utils.summarize_results(home_team, player_stats)
     away_team_details = utils.summarize_results(away_team, player_stats)
 
-    return render_template('game.html', home=home_team_details, away=away_team_details)
+    print(game_details)
+
+    return render_template(
+        'game.html',
+        home_details=home_team_details,
+        away_details=away_team_details,
+        home_totals=home_team_details[-1],
+        away_totals=away_team_details[-1],
+        home_team=home_team,
+        away_team=away_team,
+        game_details=game_details
+    )
