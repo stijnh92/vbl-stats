@@ -44,10 +44,10 @@ def cached(func):
 
 def print_table(rows):
     table = Texttable()
-    table.set_cols_align(["l", "r", "r", "r", "r", "r", "r", "r"])
+    table.set_cols_align(["l", "r", "r", "r", "r", "r", "r", "r", "r"])
 
     table.add_rows([
-        ["Player", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT'],
+        ["Player", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT', 'GP'],
         *rows
     ])
     print(table.draw())
@@ -76,7 +76,8 @@ def summarize_results(team, player_stats):
             stats['fouls'],
             stats.get('ft', 0),
             stats.get('2p', 0),
-            stats.get('3p', 0)
+            stats.get('3p', 0),
+            stats.get('games_played', 0),
         ])
 
     ft_made = sum(x[5] for x in rows)
@@ -89,7 +90,8 @@ def summarize_results(team, player_stats):
         sum(x[4] for x in rows),
         ft_made,
         sum(x[6] for x in rows),
-        sum(x[7] for x in rows)
+        sum(x[7] for x in rows),
+        ""
     ])
     return rows
 
@@ -123,8 +125,7 @@ def get_score_for_player(player, player_stats):
     }
 
 
-def get_player_stats(events):
-    players = {}
+def get_player_stats(players, events):
     for _event in events:
         event = GameEvent(**_event)
 
@@ -220,8 +221,9 @@ def get_teams_with_players(game, game_details, team_details):
             player = Player(**_player)
             team.add_player(player)
 
-    home = Team(game_details['teamThuisNaam'])
-    away = Team(game_details['teamUitNaam'])
+    print(game_details)
+    home = Team(game_details['teamThuisNaam'], game_details['teamThuisGUID'])
+    away = Team(game_details['teamUitNaam'], game_details['teamUitGUID'])
 
     get_players(home, team_details['TtDeel'])
     get_players(away, team_details['TuDeel'])

@@ -1,8 +1,12 @@
 class Team:
+    id: str
     name: str
+    ft_attempts: int
 
-    def __init__(self, name):
+    def __init__(self, name, id):
         self.name = name
+        self.id = id
+        self.ft_attempts = 0
         self.players = list()
 
     def add_player(self, player):

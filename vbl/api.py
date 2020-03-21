@@ -7,6 +7,7 @@ class API:
     BASE_URL = 'https://vblcb.wisseq.eu/VBLCB_WebService/data/'
     GAME_INFO_ENDPOINT = 'MatchByWedGuid'
     GAME_ENDPOINT = 'DwfVgngByWedGuid'
+    GAMES_ENDPOINT = 'TeamMatchesByGuid'
     TEAMS_ENDPOINT = 'DwfDeelByWedGuid'
 
     authorization_header: str
@@ -63,4 +64,9 @@ class API:
     def get_teams_from_game(self, game_id: str):
         return self.put(self.TEAMS_ENDPOINT, {
             "WedGUID": game_id,
+        })
+
+    def get_games_for_team(self, team_id: str):
+        return self.get(self.GAMES_ENDPOINT, {
+            "teamGuid": team_id,
         })
