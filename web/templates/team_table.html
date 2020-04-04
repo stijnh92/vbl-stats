@@ -1,7 +1,8 @@
 <table class="table table-sm">
     <thead class="thead-dark">
     <tr>
-        <th width="50%" colspan="2">Player</th>
+        <th width="5%">#</th>
+        <th width="45%">Player</th>
         <th width="10%" class="text-right">Pts</th>
         <th width="10%" class="text-right">Min</th>
         <th width="10%" class="text-right">PPM</th>
@@ -12,12 +13,12 @@
     </tr>
     </thead>
     <tbody>
-    {% for row in details %}
-    <tr class="{{'table-secondary' if loop.last }}">
+    {% for row in details[0:-1] %}
+    <tr>
         <td class="text-right">
             {{ row[0].number }}
         </td>
-         <td>
+        <td>
             {{ row[0].name }}
         </td>
         {% for i in range(1, 8) %}
@@ -28,4 +29,19 @@
     </tr>
     {% endfor %}
     </tbody>
+    <tfoot>
+    <tr class="table-secondary">
+        <td class="text-right">
+            {{ details[-1].number }}
+        </td>
+        <td>
+            {{ details[-1].name }}
+        </td>
+        {% for i in range(1, 8) %}
+        <td class="text-right">
+            {{ details[-1][i] }}
+        </td>
+        {% endfor %}
+    </tr>
+    </tfoot>
 </table>

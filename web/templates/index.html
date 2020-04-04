@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mt-2 justify-content-center">
+    <div class="col-sm">
+        <h4>
+            VBL Stats
+        </h4>
+    </div>
+</div>
+
+<div class="row">
+    <table class="table table-sm">
+        <thead class="thead-dark">
+        <tr>
+            <th>Regio</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for id, name in regions.items() %}
+        <tr>
+            <td>
+                <a href="{{ url_for('region', region_id=id) }}">{{ name }}</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

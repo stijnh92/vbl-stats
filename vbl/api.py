@@ -5,6 +5,9 @@ import requests
 
 class API:
     BASE_URL = 'https://vblcb.wisseq.eu/VBLCB_WebService/data/'
+    POULES_ENDPOINT = 'ListByRegio'
+    POULE_ENDPOINT = 'pouleByGuid'
+    TEAM_ENDPOINT = 'TeamDetailByGuid'
     GAME_INFO_ENDPOINT = 'MatchByWedGuid'
     GAME_ENDPOINT = 'DwfVgngByWedGuid'
     GAMES_ENDPOINT = 'TeamMatchesByGuid'
@@ -50,6 +53,21 @@ class API:
             parameters
         )
         return response.json()
+
+    def get_poules(self, region_id: str):
+        return self.get(self.POULES_ENDPOINT, {
+            "IssRegioguid": region_id,
+        })
+
+    def get_teams(self, poule_id: str):
+        return self.get(self.POULE_ENDPOINT, {
+            "pouleguid": poule_id,
+        })[0]['teams']
+
+    def get_team(self, team_id: str):
+        return self.get(self.TEAM_ENDPOINT, {
+            "teamGuid": team_id,
+        })[0]
 
     def get_game_info(self, game_id: str):
         return self.get(self.GAME_INFO_ENDPOINT, {
