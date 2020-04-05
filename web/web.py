@@ -1,7 +1,6 @@
 import datetime
-import time
-from pytz import timezone
 
+from pytz import timezone
 from flask import Flask, render_template
 from flask import request
 
@@ -13,7 +12,8 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    # TODO: Scrape these values
+    # TODO: Scrape these values from the VBL site.
+    # https://www.basketbal.vlaanderen/competitie/resultaten-en-kalender
     regions = {
         'BVBL9110': 'Antwerpen',
         'BVBL9120': 'Limburg',
@@ -60,6 +60,21 @@ def poule(poule_id):
         teams=teams,
         id=poule_id,
         players=players,
+        show_average=format == 'average'
+    )
+
+
+@app.route('/team/<team_id>/<poule_id>')
+def team(team_id, poule_id):
+    team, team_totals = get_team_details(team_id, poule_id)
+    table_only = request.args.get('tableOnly', False)
+    format = request.args.get('format', 'average')
+
+    template = 'team.html' if not table_only else 'team_table.html'
+    return render_template(
+        template,
+        players=team.players,
+        totals=team_totals,
         show_average=format == 'average'
     )
 
@@ -124,27 +139,6 @@ def get_team_details(team_id, poule_id):
     return team, team_details
 
 
-@app.route('/team/<team_id>/<poule_id>')
-def team(team_id, poule_id):
-    team, team_totals = get_team_details(team_id, poule_id)
-    table_only = request.args.get('tableOnly', False)
-    format = request.args.get('format', 'average')
-
-    template = 'team.html' if not table_only else 'team_table.html'
-    return render_template(
-        template,
-        players=team.players,
-        totals=team_totals,
-        show_average=format == 'average'
-    )
-
-
-@app.template_filter('timestamp_to_hours')
-def timestamp_to_hours(s):
-    date = datetime.datetime.fromtimestamp(s/1000.0)
-    return date.astimezone(timezone('UTC')).strftime('%H:%M')
-
-
 @app.route('/game/<game_id>')
 def game(game_id):
     vbl_api = api.API()
@@ -159,18 +153,18 @@ def game(game_id):
     home_team.ft_attempts = utils.get_free_throws_allowed(away_team, player_stats)
     away_team.ft_attempts = utils.get_free_throws_allowed(home_team, player_stats)
 
-    home_team_details = utils.summarize_results(home_team, player_stats)
-    away_team_details = utils.summarize_results(away_team, player_stats)
-
-    print(game_details)
+    utils.summarize_results(home_team, player_stats)
+    utils.summarize_results(away_team, player_stats)
 
     return render_template(
         'game.html',
-        home_details=home_team_details,
-        away_details=away_team_details,
-        home_totals=home_team_details[-1],
-        away_totals=away_team_details[-1],
         home_team=home_team,
         away_team=away_team,
         game_details=game_details
     )
+
+
+@app.template_filter('timestamp_to_hours')
+def timestamp_to_hours(s):
+    date = datetime.datetime.fromtimestamp(s/1000.0)
+    return date.astimezone(timezone('UTC')).strftime('%H:%M')

@@ -12,15 +12,13 @@
     <div class="row mt-2 justify-content-center">
         <div class="col-sm text-right">
             <h4>
-                {{ home_team.name }}
+                {{ home_team }}
             </h4>
-            <h3>{{home_totals[1]}}</h3>
         </div>
         <div class="col-sm text-left">
             <h4>
                 {{ away_team.name }}
             </h4>
-            <h3>{{away_totals[1]}}</h3>
         </div>
         <div class="w-100"></div>
         <div class="col-sm text-center">
@@ -35,11 +33,11 @@
     <ul class="nav nav-tabs nav-fill justify-content-center" id="myTab" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-               aria-selected="true">{{ home_team.name }}</a>
+               aria-selected="true">{{ home_team }}</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" id="profile-tab" data-toggle="tab" href="#away" role="tab"
-               aria-controls="profile" aria-selected="false">{{ away_team.name }}</a>
+               aria-controls="profile" aria-selected="false">{{ away_team }}</a>
         </li>
     </ul>
 
@@ -47,20 +45,20 @@
         <div class="col-md">
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    {% with details=home_details %}
+                    {% with players=home_team.players %}
                     {% include "team_table.html" %}
                     {% endwith %}
                     <p>
-                        Free throws: {{home_totals[5]}}/{{ home_team.ft_attempts }} ({{ ((home_totals[5] / home_team.ft_attempts) * 100) | int }}%)
+
                     </p>
                 </div>
 
                 <div class="tab-pane fade" id="away" role="tabpanel" aria-labelledby="profile-tab">
-                    {% with details=away_details %}
+                    {% with players=away_team.players %}
                     {% include "team_table.html" %}
                     {% endwith %}
                     <p>
-                        Free throws: {{away_totals[5]}}/{{ away_team.ft_attempts }} ({{ ((away_totals[5] / away_team.ft_attempts) * 100) | int }}%)
+
                     </p>
                 </div>
             </div>

@@ -75,6 +75,10 @@ def get_score_for_player(player, player_stats):
             ppm = round(stats['score'] / stats['total_minutes'], 2)
         else:
             ppm = 0
+
+        if stats['games_played'] == 0:
+            stats['games_played'] = 1
+
         stats.update({
             'ppm': ppm,
             'score_avg': round(stats['score'] / stats['games_played'], 2),
