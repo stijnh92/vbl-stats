@@ -40,5 +40,4 @@ if __name__ == '__main__':
         team_details = utils.summarize_results(requested_team, player_stats)
         team.ft_attempts += requested_team.ft_attempts
 
-    print(team_details)
     utils.print_results(team, team_details)

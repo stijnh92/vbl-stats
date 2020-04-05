@@ -11,10 +11,12 @@
         {% for team in teams %}
         <tr>
             <td>
-                <a href="{{ url_for('team', team_id=team['guid']) }}">{{ team['naam'] }}</a>
+                <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
             </td>
         </tr>
         {% endfor %}
         </tbody>
     </table>
+
+{% include "team_table.html" %}
 {% endblock %}

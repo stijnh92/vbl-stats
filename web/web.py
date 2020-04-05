@@ -6,7 +6,7 @@ from flask import Flask, render_template
 from flask import request
 
 from vbl import api, utils
-from vbl.models import Team
+from vbl.models.team import Team
 
 app = Flask(__name__)
 
@@ -34,7 +34,7 @@ def index():
 @app.route('/region/<region_id>')
 def region(region_id):
     vbl_api = api.API()
-    poules = vbl_api.get_poules(region_id)
+    poules = vbl_api.get_poule_list(region_id)
     return render_template(
         'region.html',
         poules=poules
@@ -44,29 +44,40 @@ def region(region_id):
 @app.route('/poule/<poule_id>')
 def poule(poule_id):
     vbl_api = api.API()
-    teams = vbl_api.get_teams(poule_id)
+    teams = vbl_api.get_team_list(poule_id)
+    players = []
+
+    for _team in teams:
+        team, team_totals = get_team_details(_team['guid'], poule_id)
+        players += [player for player in team.players]
+
+    table_only = request.args.get('tableOnly', False)
+    format = request.args.get('format', 'average')
+    template = 'poule.html' if not table_only else 'team_table.html'
+
     return render_template(
-        'poule.html',
-        teams=teams
+        template,
+        teams=teams,
+        id=poule_id,
+        players=players,
+        show_average=format == 'average'
     )
 
 
-@app.route('/team/<team_id>')
-def team(team_id):
+def get_team_details(team_id, poule_id):
     vbl_api = api.API()
-    team = vbl_api.get_team(team_id)
+    team_details = vbl_api.get_team(team_id)
+    team = Team(team_details['naam'], team_details['guid'])
 
     all_games = vbl_api.get_games_for_team(team_id)
 
     played_games = []
     for game in all_games:
-        if game['pouleGUID'] == 'BVBL19209120LIHSE31A' and game['uitslag'] != '':
+        if game['pouleGUID'] == poule_id and game['uitslag'] != '':
             played_games.append(game)
 
-    team = Team('BBC As', team_id)
     team_details = []
     player_stats = {}
-
     for game in played_games:
         game_id = game['guid']
 
@@ -84,19 +95,48 @@ def team(team_id):
             requested_team = away_team
             other_team = home_team
 
+        # add all players to the requested team
+        for player in requested_team.players:
+            if player.id not in [player.id for player in team.players]:
+                team.add_player(player)
+
         player_stats = utils.get_player_stats(player_stats, game_events)
 
-        requested_team.ft_attempts = utils.get_free_throws_allowed(other_team, player_stats)
+        # Get the amount of games played per player
+        for playerId, value in player_stats.items():
+            # If the player id is found in the team details of this game, add one extra
+            played = False
+            if playerId in [player['RelGUID'] for player in game_teams['TtDeel']]:
+                played = True
+            if playerId in [player['RelGUID'] for player in game_teams['TuDeel']]:
+                played = True
 
-        team_details = utils.summarize_results(requested_team, player_stats)
-        team.ft_attempts += requested_team.ft_attempts
+            if played:
+                player_stats[playerId].update({
+                    'games_played': player_stats[playerId]['games_played'] + 1
+                })
 
+        team.ft_attempts = utils.get_free_throws_allowed(other_team, player_stats)
+
+        team_details = utils.summarize_results(team, player_stats)
+        team.ft_attempts += team.ft_attempts
+
+    return team, team_details
+
+
+@app.route('/team/<team_id>/<poule_id>')
+def team(team_id, poule_id):
+    team, team_totals = get_team_details(team_id, poule_id)
+    table_only = request.args.get('tableOnly', False)
+    format = request.args.get('format', 'average')
+
+    template = 'team.html' if not table_only else 'team_table.html'
     return render_template(
-        'team.html',
-        team=team,
-        details=team_details
+        template,
+        players=team.players,
+        totals=team_totals,
+        show_average=format == 'average'
     )
-
 
 
 @app.template_filter('timestamp_to_hours')

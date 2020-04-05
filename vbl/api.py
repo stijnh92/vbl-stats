@@ -5,13 +5,13 @@ import requests
 
 class API:
     BASE_URL = 'https://vblcb.wisseq.eu/VBLCB_WebService/data/'
-    POULES_ENDPOINT = 'ListByRegio'
-    POULE_ENDPOINT = 'pouleByGuid'
-    TEAM_ENDPOINT = 'TeamDetailByGuid'
     GAME_INFO_ENDPOINT = 'MatchByWedGuid'
     GAME_ENDPOINT = 'DwfVgngByWedGuid'
-    GAMES_ENDPOINT = 'TeamMatchesByGuid'
-    TEAMS_ENDPOINT = 'DwfDeelByWedGuid'
+    GAMES_FOR_TEAM_ENDPOINT = 'TeamMatchesByGuid'
+    POULE_LIST_ENDPOINT = 'ListByRegio'
+    TEAM_ENDPOINT = 'TeamDetailByGuid'
+    TEAM_LIST_ENDPOINT = 'pouleByGuid'
+    TEAMS_FROM_GAME_ENDPOINT = 'DwfDeelByWedGuid'
 
     authorization_header: str
     crud_method: str
@@ -54,37 +54,37 @@ class API:
         )
         return response.json()
 
-    def get_poules(self, region_id: str):
-        return self.get(self.POULES_ENDPOINT, {
-            "IssRegioguid": region_id,
-        })
-
-    def get_teams(self, poule_id: str):
-        return self.get(self.POULE_ENDPOINT, {
-            "pouleguid": poule_id,
-        })[0]['teams']
-
     def get_team(self, team_id: str):
         return self.get(self.TEAM_ENDPOINT, {
             "teamGuid": team_id,
         })[0]
 
-    def get_game_info(self, game_id: str):
-        return self.get(self.GAME_INFO_ENDPOINT, {
-            "issguid": game_id,
-        })[0]['doc']
+    def get_team_list(self, poule_id: str):
+        return self.get(self.TEAM_LIST_ENDPOINT, {
+            "pouleguid": poule_id,
+        })[0]['teams']
+
+    def get_poule_list(self, region_id: str):
+        return self.get(self.POULE_LIST_ENDPOINT, {
+            "IssRegioguid": region_id,
+        })
 
     def get_game(self, game_id: str):
         return self.put(self.GAME_ENDPOINT, {
             "WedGUID": game_id,
         })
 
+    def get_game_info(self, game_id: str):
+        return self.get(self.GAME_INFO_ENDPOINT, {
+            "issguid": game_id,
+        })[0]['doc']
+
     def get_teams_from_game(self, game_id: str):
-        return self.put(self.TEAMS_ENDPOINT, {
+        return self.put(self.TEAMS_FROM_GAME_ENDPOINT, {
             "WedGUID": game_id,
         })
 
     def get_games_for_team(self, team_id: str):
-        return self.get(self.GAMES_ENDPOINT, {
+        return self.get(self.GAMES_FOR_TEAM_ENDPOINT, {
             "teamGuid": team_id,
         })

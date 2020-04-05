@@ -1,5 +1,4 @@
 requests
 redis
-texttable
 flask
 pytz

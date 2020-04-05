@@ -2,9 +2,10 @@ from functools import wraps
 import json
 
 from redis import Redis
-from texttable import Texttable
 
-from vbl.models import Team, Player, GameEvent
+from vbl.models.event import GameEvent
+from vbl.models.player import Player
+from vbl.models.team import Team
 
 
 def cache_key(endpoint, data):
@@ -42,67 +43,29 @@ def cached(func):
     return wrapper
 
 
-def print_table(rows):
-    table = Texttable()
-    table.set_cols_align(["l", "r", "r", "r", "r", "r", "r", "r", "r"])
-
-    table.add_rows([
-        ["Player", "Pts.", "Min.", 'Pts./Min.', 'Fouls', 'FT', '2PT', '3PT', 'GP'],
-        *rows
-    ])
-    print(table.draw())
-
-
 def get_free_throws_allowed(team: Team, player_stats):
-    sum = 0
+    free_throws_allowed = 0
     for player in team.players:
         if not player_stats.get(player.id):
             continue
 
-        sum += player_stats[player.id].get('ft_allowed', 0)
+        free_throws_allowed += player_stats[player.id].get('ft_allowed', 0)
 
-    return sum
+    return free_throws_allowed
 
 
 def summarize_results(team, player_stats):
-    rows = []
     for player in team.players:
-        stats = get_score_for_player(player, player_stats)
-        rows.append([
-            player,
-            stats['score'],
-            stats['total_minutes'],
-            stats['ppm'],
-            stats['fouls'],
-            stats.get('ft', 0),
-            stats.get('2p', 0),
-            stats.get('3p', 0),
-            stats.get('games_played', 0),
-        ])
-
-    ft_made = sum(x[5] for x in rows)
-    # Add totals row
-    rows.append([
-        "Total",
-        sum(x[1] for x in rows),
-        sum(x[2] for x in rows),
-        "",
-        sum(x[4] for x in rows),
-        ft_made,
-        sum(x[6] for x in rows),
-        sum(x[7] for x in rows),
-        ""
-    ])
-    return rows
-
-
-def print_results(team, rows):
-    ft_made = rows[-1][5]
-
-    print(team.name)
-    print_table(rows)
-    print('Free Throws: {0}/{1} = {2}%'.format(ft_made, team.ft_attempts, int((ft_made / team.ft_attempts) * 100)))
-    print('')
+        player.stats = get_score_for_player(player, player_stats)
+    totals = {
+        'score': sum(player.stats['score'] for player in team.players),
+        'total_minutes': sum(player.stats['total_minutes'] for player in team.players),
+        'fouls': sum(player.stats['fouls'] for player in team.players),
+        'ft': sum(player.stats.get('ft', 0) for player in team.players),
+        '2p': sum(player.stats.get('2p', 0) for player in team.players),
+        '3p': sum(player.stats.get('3p', 0) for player in team.players)
+    }
+    return totals
 
 
 def get_score_for_player(player, player_stats):
@@ -113,7 +76,13 @@ def get_score_for_player(player, player_stats):
         else:
             ppm = 0
         stats.update({
-            'ppm': ppm
+            'ppm': ppm,
+            'score_avg': round(stats['score'] / stats['games_played'], 2),
+            'total_minutes_avg': round(stats['total_minutes'] / stats['games_played'], 2),
+            'fouls_avg': round(stats['fouls'] / stats['games_played'], 2),
+            'ft_avg': round(stats['ft'] / stats['games_played'], 2),
+            '2p_avg': round(stats['2p'] / stats['games_played'], 2),
+            '3p_avg': round(stats['3p'] / stats['games_played'], 2)
         })
         return stats
 
@@ -139,7 +108,8 @@ def get_player_stats(players, events):
             'ft_allowed': 0,
             'ft': 0,
             '2p': 0,
-            '3p': 0
+            '3p': 0,
+            'games_played': 0
         })
 
         if event.is_substitution():
@@ -192,7 +162,6 @@ def get_player_stats(players, events):
     return players
 
 
-
 def substitute(player, substitution: GameEvent):
     minute = (substitution.period - 1) * 10 + substitution.minute
 
@@ -211,17 +180,15 @@ def substitute(player, substitution: GameEvent):
     return player
 
 
-
 def get_teams_with_players(game, game_details, team_details):
     def get_players(team, players):
         for _player in players:
             if not _player['RugNr'].isdigit():
                 continue
 
-            player = Player(**_player)
+            player = Player(team, **_player)
             team.add_player(player)
 
-    print(game_details)
     home = Team(game_details['teamThuisNaam'], game_details['teamThuisGUID'])
     away = Team(game_details['teamUitNaam'], game_details['teamUitGUID'])
 
