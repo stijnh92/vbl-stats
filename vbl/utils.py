@@ -1,5 +1,6 @@
 from functools import wraps
 import json
+import os
 
 from redis import Redis
 
@@ -26,7 +27,11 @@ def cached(func):
         _, endpoint, data = list(args)
         key = cache_key(endpoint, data)
 
-        redis = Redis(host='localhost', port=6379, db=0)
+        redis = Redis(
+            host=os.environ['REDIS_HOST'],
+            port=os.environ['REDIS_PORT'],
+            password=os.environ['REDIS_PASSWORD'],
+            db=0)
         result = redis.get(key)
 
         if result is None:

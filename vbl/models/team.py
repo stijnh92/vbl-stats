@@ -15,7 +15,7 @@ class Team:
 
     @property
     def ft_scored(self):
-        return sum(player.stats['ft'] for player in self.players)
+        return sum(player.stats.get('ft', 0) for player in self.players)
 
     def ft_percentage(self):
         return round((self.ft_scored / self.ft_attempts) * 100)
