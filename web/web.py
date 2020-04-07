@@ -73,6 +73,7 @@ def team(team_id, poule_id):
     template = 'team.html' if not table_only else 'team_table.html'
     return render_template(
         template,
+        team=team,
         players=team.players,
         totals=team_totals,
         show_average=format == 'average'
@@ -131,10 +132,9 @@ def get_team_details(team_id, poule_id):
                     'games_played': player_stats[playerId]['games_played'] + 1
                 })
 
-        team.ft_attempts = utils.get_free_throws_allowed(other_team, player_stats)
+        team.ft_attempts += utils.get_free_throws_allowed(other_team, player_stats)
 
         team_details = utils.summarize_results(team, player_stats)
-        team.ft_attempts += team.ft_attempts
 
     return team, team_details
 

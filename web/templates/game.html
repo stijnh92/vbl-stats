@@ -1,71 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>My Webpage</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}"/>
-</head>
-<body>
-<script src="{{ url_for('static', filename='jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+{% extends "base.html" %}
 
-<div class="container-fluid">
-    <div class="row mt-2 justify-content-center">
-        <div class="col-sm text-right">
-            <h4>
-                {{ home_team }}
-            </h4>
-        </div>
-        <div class="col-sm text-left">
-            <h4>
-                {{ away_team.name }}
-            </h4>
-        </div>
-        <div class="w-100"></div>
-        <div class="col-sm text-center">
-            <hr>
-            <p>
-                {{ game_details['accommodatieDoc']['naam'] }}<br/>
-                {{ game_details['datumString'] }} {{ game_details['jsDTCode'] | timestamp_to_hours }}
-            </p>
-        </div>
+{% block content %}
+<div class="row mt-2 justify-content-center">
+    <div class="col-sm text-right">
+        <h4>
+            {{ home_team }}
+        </h4>
     </div>
+    <div class="col-sm text-left">
+        <h4>
+            {{ away_team.name }}
+        </h4>
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-center">
+        <hr>
+        <p>
+            {{ game_details['accommodatieDoc']['naam'] }}<br/>
+            {{ game_details['datumString'] }} {{ game_details['jsDTCode'] | timestamp_to_hours }}
+        </p>
+    </div>
+</div>
 
-    <ul class="nav nav-tabs nav-fill justify-content-center" id="myTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
-               aria-selected="true">{{ home_team }}</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#away" role="tab"
-               aria-controls="profile" aria-selected="false">{{ away_team }}</a>
-        </li>
-    </ul>
+<ul class="nav nav-tabs nav-fill justify-content-center" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+           aria-selected="true">{{ home_team }}</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#away" role="tab"
+           aria-controls="profile" aria-selected="false">{{ away_team }}</a>
+    </li>
+</ul>
 
-    <div class="row">
-        <div class="col-md">
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    {% with players=home_team.players %}
+<div class="row">
+    <div class="col-md">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                {% with players=home_team.players, show_team=false %}
                     {% include "team_table.html" %}
-                    {% endwith %}
-                    <p>
+                {% endwith %}
+                <p>
 
-                    </p>
-                </div>
+                </p>
+            </div>
 
-                <div class="tab-pane fade" id="away" role="tabpanel" aria-labelledby="profile-tab">
-                    {% with players=away_team.players %}
+            <div class="tab-pane fade" id="away" role="tabpanel" aria-labelledby="profile-tab">
+                {% with players=away_team.players, show_team=false %}
                     {% include "team_table.html" %}
-                    {% endwith %}
-                    <p>
+                {% endwith %}
+                <p>
 
-                    </p>
-                </div>
+                </p>
             </div>
         </div>
     </div>
-
-
 </div>
-</body>
-</html>
+{% endblock %}

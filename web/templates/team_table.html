@@ -1,89 +1,93 @@
 <div id="overview">
-<table class="table table-sm" id="team-table">
-    <thead class="thead-dark">
-    <tr>
-        <th width="5%"></th>
-        <th width="25%">Player</th>
-        <th width="15%">Team</th>
-        <th width="10%" class="text-right">Pts</th>
-        <th width="10%" class="text-right">Min</th>
-        <th width="5%" class="text-right">F</th>
-        <th width="5%" class="text-right">FT</th>
-        <th width="5%" class="text-right">2PT</th>
-        <th width="5%" class="text-right">3PT</th>
-        <th width="5%" class="text-right">Games</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for player in players %}
-    <tr>
-        <td class="text-right">
-        </td>
-        <td>
-            {{ player.name }} ({{ player.number }})
-        </td>
-        <td>
-            {{ player.team.name }}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+    <table class="table table-sm team-table">
+        <thead class="thead-dark">
+        <tr>
+            <th width="5%"></th>
+            <th width="25%">Player</th>
+            {% if show_team %}
+                <th width="15%">Team</th>
+            {% endif %}
+            <th width="10%" class="text-right">Pts</th>
+            <th width="10%" class="text-right">Min</th>
+            <th width="5%" class="text-right">F</th>
+            <th width="5%" class="text-right">FT</th>
+            <th width="5%" class="text-right">2PT</th>
+            <th width="5%" class="text-right">3PT</th>
+            <th width="5%" class="text-right">Games</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for player in players %}
+        <tr>
+            <td class="text-right">
+            </td>
+            <td>
+                {{ player }}
+            </td>
+            {% if show_team %}
+            <td>
+                {{ player.team.name }}
+            </td>
+            {% endif %}
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['score_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['score'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['total_minutes_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['total_minutes'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['fouls_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['fouls'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['ft_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['ft'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['2p_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['2p'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {% if show_average %}
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {% if show_average %}
                 {{ player.stats['3p_avg'] }}
-            {% else %}
+                {% else %}
                 {{ player.stats['3p'] }}
-            {% endif %}
-        </td>
-        <td class="text-right">
-            {{ player.stats['games_played'] }}
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-    <tfoot>
-    </tfoot>
-</table>
+                {% endif %}
+            </td>
+            <td class="text-right">
+                {{ player.stats['games_played'] }}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
 
-{% if show_average %}
+    {% if show_average %}
     <btn class="btn btn-primary" id="btn_show_totals">
         Show Totals
     </btn>
-{% else %}
+    {% else %}
     <btn class="btn btn-primary" id="btn_show_average">
         Show Average
     </btn>
-{% endif %}
+    {% endif %}
 </div>

@@ -2,21 +2,23 @@
 
 {% block content %}
 <table class="table table-sm">
-        <thead class="thead-dark">
-        <tr>
-            <th>Naam</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for team in teams %}
-        <tr>
-            <td>
-                <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <thead class="thead-dark">
+    <tr>
+        <th>Naam</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for team in teams %}
+    <tr>
+        <td>
+            <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
+{% with show_team=true %}
 {% include "team_table.html" %}
+{% endwith %}
 {% endblock %}

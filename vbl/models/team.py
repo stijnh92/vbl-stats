@@ -13,5 +13,12 @@ class Team:
     def add_player(self, player):
         self.players.append(player)
 
+    @property
+    def ft_scored(self):
+        return sum(player.stats['ft'] for player in self.players)
+
+    def ft_percentage(self):
+        return round((self.ft_scored / self.ft_attempts) * 100)
+
     def __str__(self):
         return "{name}".format(name=self.name)

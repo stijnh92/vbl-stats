@@ -1,10 +1,10 @@
 $(document).ready(function () {
     function initDataTable() {
-        var t = $('#team-table').DataTable({
+        var t = $('.team-table').DataTable({
             paging: false,
             searching: false,
             info: false,
-            order: [[3, "desc"]]
+            order: [[2, "desc"]]
         });
 
         t.on('order.dt', function () {
