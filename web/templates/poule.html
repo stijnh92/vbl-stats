@@ -27,12 +27,14 @@
         <table class="table table-sm">
             <thead class="thead-dark">
             <tr>
+                <th>#</th>
                 <th>Team</th>
             </tr>
             </thead>
             <tbody>
             {% for team in teams %}
             <tr>
+                <td>{{loop.index}}</td>
                 <td>
                     <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
                 </td>
