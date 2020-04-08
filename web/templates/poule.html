@@ -1,24 +1,62 @@
 {% extends "base.html" %}
 
 {% block content %}
-<table class="table table-sm">
-    <thead class="thead-dark">
-    <tr>
-        <th>Naam</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for team in teams %}
-    <tr>
-        <td>
-            <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="row mt-2 justify-content-center">
+    <div class="col-sm text-center">
+        <h4>
+            VBL Stats (version 0.1)
+        </h4>
+        <hr/>
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-left">
+        <p>
+            <a href="javascript:history.back()">Back to competitions</a>
+        </p>
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-center">
+        <p>
+            Pick a team:
+        </p>
+    </div>
+</div>
 
-{% with show_team=true %}
-{% include "team_table.html" %}
-{% endwith %}
-{% endblock %}
+<div class="row">
+    <div class="col">
+        <table class="table table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th>Team</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for team in teams %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('team', team_id=team['guid'], poule_id=id) }}">{{ team['naam'] }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm text-center">
+        <h5>
+            Competition stats
+        </h5>
+    </div>
+    <div class="w-100"></div>
+
+    <div class="col">
+        {% with show_team=true %}
+        {% include "team_table.html" %}
+        {% endwith %}
+        {% endblock %}
+    </div>
+</div>
+

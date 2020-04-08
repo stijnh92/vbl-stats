@@ -2,29 +2,38 @@
 
 {% block content %}
 <div class="row mt-2 justify-content-center">
-    <div class="col-sm">
+    <div class="col-sm text-center">
         <h4>
-            VBL Stats
+            VBL Stats (version 0.1)
         </h4>
+        <hr />
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-center">
+        <p>
+            Pick a region:
+        </p>
     </div>
 </div>
-
 <div class="row">
-    <table class="table table-sm">
-        <thead class="thead-dark">
-        <tr>
-            <th>Regio</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for id, name in regions.items() %}
-        <tr>
-            <td>
-                <a href="{{ url_for('region', region_id=id) }}">{{ name }}</a>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="col">
+        <table class="table table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th>Region</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for id, name in regions.items() %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('region', region_id=id) }}">{{ name }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
 </div>
 {% endblock %}

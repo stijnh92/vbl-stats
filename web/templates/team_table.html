@@ -5,7 +5,7 @@
             <th width="5%"></th>
             <th width="25%">Player</th>
             {% if show_team %}
-                <th width="15%">Team</th>
+                <th width="25%">Team</th>
             {% endif %}
             <th width="10%" class="text-right">Pts</th>
             <th width="10%" class="text-right">Min</th>
@@ -13,7 +13,7 @@
             <th width="5%" class="text-right">FT</th>
             <th width="5%" class="text-right">2PT</th>
             <th width="5%" class="text-right">3PT</th>
-            <th width="5%" class="text-right">Games</th>
+            <th width="5%" class="text-right">GP</th>
         </tr>
         </thead>
         <tbody>
@@ -82,12 +82,12 @@
     </table>
 
     {% if show_average %}
-    <btn class="btn btn-primary" id="btn_show_totals">
-        Show Totals
+    <btn class="btn btn-outline-dark" id="btn_show_totals">
+        Show Total Stats
     </btn>
     {% else %}
-    <btn class="btn btn-primary" id="btn_show_average">
-        Show Average
+    <btn class="btn btn-outline-dark" id="btn_show_average">
+        Show Average Stats
     </btn>
     {% endif %}
 </div>

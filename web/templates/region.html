@@ -1,24 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<table class="table table-sm">
-        <thead class="thead-dark">
-        <tr>
-            <th>Reeks</th>
-            <th>Categorie</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for poule in poules %}
-        <tr>
-            <td>
-                <a href="{{ url_for('poule', poule_id=poule['guid']) }}">{{ poule['naam'] }}</a>
-            </td>
-            <td>
-                {{ poule['categorie'] }}
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div class="row mt-2 justify-content-center">
+    <div class="col-sm text-center">
+        <h4>
+            VBL Stats (version 0.1)
+        </h4>
+        <hr/>
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-left">
+        <p>
+            <a href="javascript:history.back()">Back to regions</a>
+        </p>
+    </div>
+    <div class="w-100"></div>
+    <div class="col-sm text-center">
+        <p>
+            Pick a competition:
+        </p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <table class="table table-sm">
+            <thead class="thead-dark">
+            <tr>
+                <th>Competition</th>
+                <th>Category</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for poule in poules %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('poule', poule_id=poule['guid']) }}">{{ poule['naam'] }}</a>
+                </td>
+                <td>
+                    {{ poule['categorie'] }}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
 {% endblock %}

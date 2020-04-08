@@ -1,10 +1,15 @@
 $(document).ready(function () {
     function initDataTable() {
-        var t = $('.team-table').DataTable({
+
+        var table = $('.team-table');
+        var length = table.find("tr:first th").length;
+        var defaultSort = length === 10 ? 3 : 2;
+
+        var t = table.DataTable({
             paging: false,
             searching: false,
             info: false,
-            order: [[2, "desc"]]
+            order: [[defaultSort, "desc"]]
         });
 
         t.on('order.dt', function () {

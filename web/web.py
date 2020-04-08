@@ -37,6 +37,7 @@ def region(region_id):
     poules = vbl_api.get_poule_list(region_id)
     return render_template(
         'region.html',
+        id=region_id,
         poules=poules
     )
 
@@ -166,5 +167,5 @@ def game(game_id):
 
 @app.template_filter('timestamp_to_hours')
 def timestamp_to_hours(s):
-    date = datetime.datetime.fromtimestamp(s/1000.0)
+    date = datetime.datetime.fromtimestamp(s / 1000.0)
     return date.astimezone(timezone('UTC')).strftime('%H:%M')
