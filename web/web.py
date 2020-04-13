@@ -1,4 +1,5 @@
 import datetime
+from collections import defaultdict
 
 from pytz import timezone
 from flask import Flask, render_template
@@ -35,10 +36,16 @@ def index():
 def region(region_id):
     vbl_api = api.API()
     poules = vbl_api.get_poule_list(region_id)
+
+    poules = sorted(poules, key=lambda i: i['sort'])
+    categories = defaultdict(list)
+    for poule in poules:
+        categories[poule['categorie']].append(poule)
+
     return render_template(
         'region.html',
         id=region_id,
-        poules=poules
+        categories=categories
     )
 
 
@@ -119,16 +126,10 @@ def get_team_details(team_id, poule_id):
 
         player_stats = utils.get_player_stats(player_stats, game_events)
 
-        # Get the amount of games played per player
+        # Check if we can mark this game as played for a player.
         for playerId, value in player_stats.items():
-            # If the player id is found in the team details of this game, add one extra
-            played = False
-            if playerId in [player['RelGUID'] for player in game_teams['TtDeel']]:
-                played = True
-            if playerId in [player['RelGUID'] for player in game_teams['TuDeel']]:
-                played = True
-
-            if played:
+            # Check if the gamer has played at least one minute in this game.
+            if value['game_minutes'] > 0:
                 player_stats[playerId].update({
                     'games_played': player_stats[playerId]['games_played'] + 1
                 })

@@ -82,17 +82,18 @@ def get_score_for_player(player, player_stats):
             ppm = 0
 
         if stats['games_played'] == 0:
-            stats['games_played'] = 1
-
-        stats.update({
-            'ppm': ppm,
-            'score_avg': round(stats['score'] / stats['games_played'], 2),
-            'total_minutes_avg': round(stats['total_minutes'] / stats['games_played'], 2),
-            'fouls_avg': round(stats['fouls'] / stats['games_played'], 2),
-            'ft_avg': round(stats['ft'] / stats['games_played'], 2),
-            '2p_avg': round(stats['2p'] / stats['games_played'], 2),
-            '3p_avg': round(stats['3p'] / stats['games_played'], 2)
-        })
+            stats.update({
+                'ppm': ppm
+            })
+        else:
+            stats.update({
+                'score_avg': round(stats['score'] / stats['games_played'], 2),
+                'total_minutes_avg': round(stats['total_minutes'] / stats['games_played'], 2),
+                'fouls_avg': round(stats['fouls'] / stats['games_played'], 2),
+                'ft_avg': round(stats['ft'] / stats['games_played'], 2),
+                '2p_avg': round(stats['2p'] / stats['games_played'], 2),
+                '3p_avg': round(stats['3p'] / stats['games_played'], 2)
+            })
         return stats
 
     return {
@@ -104,6 +105,12 @@ def get_score_for_player(player, player_stats):
 
 
 def get_player_stats(players, events):
+    # This is a new game, so reset any game specific stats for the player.
+    for playerId, value in players.items():
+        value.update({
+            'game_minutes': 0
+        })
+
     for _event in events:
         event = GameEvent(**_event)
 
@@ -118,7 +125,8 @@ def get_player_stats(players, events):
             'ft': 0,
             '2p': 0,
             '3p': 0,
-            'games_played': 0
+            'games_played': 0,
+            'game_minutes': 0
         })
 
         if event.is_substitution():
@@ -166,7 +174,9 @@ def get_player_stats(players, events):
         if stats['last_in'] > stats['last_out'] and stats['last_out'] != 40:
             minutes = 40 - stats['last_in']
             stats['last_out'] = 40
-            stats['total_minutes'] += minutes
+            stats['game_minutes'] += minutes
+
+        stats['total_minutes'] += stats['game_minutes']
 
     return players
 
@@ -184,7 +194,7 @@ def substitute(player, substitution: GameEvent):
         # Player comes out, get the minutes he played.
         last_in = player['last_in']
         player['last_out'] = minute
-        player['total_minutes'] += minute - last_in
+        player['game_minutes'] += minute - last_in
 
     return player
 
