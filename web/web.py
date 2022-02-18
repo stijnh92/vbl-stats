@@ -35,16 +35,18 @@ def index():
 @app.route('/region/<region_id>')
 def region(region_id):
     vbl_api = api.API()
-    poules = vbl_api.get_poule_list(region_id)
+    poules = vbl_api.get_poule_list_for_region(region_id)
 
+    # Sort the poules by the "sort" property.
     poules = sorted(poules, key=lambda i: i['sort'])
+
+    # Group the poules by the "categorie" property.
     categories = defaultdict(list)
     for poule in poules:
         categories[poule['categorie']].append(poule)
 
     return render_template(
         'region.html',
-        id=region_id,
         categories=categories
     )
 
@@ -52,7 +54,7 @@ def region(region_id):
 @app.route('/poule/<poule_id>')
 def poule(poule_id):
     vbl_api = api.API()
-    teams = vbl_api.get_team_list(poule_id)
+    teams = vbl_api.get_team_list_for_poule(poule_id)
     players = []
 
     for _team in teams:
@@ -61,14 +63,16 @@ def poule(poule_id):
 
     table_only = request.args.get('tableOnly', False)
     format = request.args.get('format', 'average')
+
     template = 'poule.html' if not table_only else 'team_table.html'
+    show_average = format == 'average'
 
     return render_template(
         template,
-        teams=teams,
         id=poule_id,
+        teams=teams,
         players=players,
-        show_average=format == 'average'
+        show_average=show_average
     )
 
 
@@ -79,13 +83,49 @@ def team(team_id, poule_id):
     format = request.args.get('format', 'average')
 
     template = 'team.html' if not table_only else 'team_table.html'
+    show_average = format == 'average'
+
+    # TODO: Show games for team in this poule
+    # TODO: Add detail view for a game
+
     return render_template(
         template,
         team=team,
         players=team.players,
         totals=team_totals,
-        show_average=format == 'average'
+        show_average=show_average
     )
+
+
+@app.route('/game/<game_id>')
+def game(game_id):
+    vbl_api = api.API()
+
+    game_details = vbl_api.get_game_info(game_id)
+    game_events = vbl_api.get_game(game_id)['GebNis']
+    game_teams = vbl_api.get_teams_from_game(game_id)
+
+    home_team, away_team = utils.get_teams_with_players(game_id, game_details, game_teams)
+    player_stats = utils.get_player_stats({}, game_events)
+
+    home_team.ft_attempts = utils.get_free_throws_allowed(away_team, player_stats)
+    away_team.ft_attempts = utils.get_free_throws_allowed(home_team, player_stats)
+
+    utils.summarize_results(home_team, player_stats)
+    utils.summarize_results(away_team, player_stats)
+
+    return render_template(
+        'game.html',
+        home_team=home_team,
+        away_team=away_team,
+        game_details=game_details
+    )
+
+
+@app.template_filter('timestamp_to_hours')
+def timestamp_to_hours(s):
+    date = datetime.datetime.fromtimestamp(s / 1000.0)
+    return date.astimezone(timezone('UTC')).strftime('%H:%M')
 
 
 def get_team_details(team_id, poule_id):
@@ -94,6 +134,8 @@ def get_team_details(team_id, poule_id):
     team = Team(team_details['naam'], team_details['guid'])
 
     all_games = vbl_api.get_games_for_team(team_id)
+
+    print(team_id)
 
     played_games = []
     for game in all_games:
@@ -139,34 +181,3 @@ def get_team_details(team_id, poule_id):
         team_details = utils.summarize_results(team, player_stats)
 
     return team, team_details
-
-
-@app.route('/game/<game_id>')
-def game(game_id):
-    vbl_api = api.API()
-
-    game_details = vbl_api.get_game_info(game_id)
-    game_events = vbl_api.get_game(game_id)['GebNis']
-    game_teams = vbl_api.get_teams_from_game(game_id)
-
-    home_team, away_team = utils.get_teams_with_players(game_id, game_details, game_teams)
-    player_stats = utils.get_player_stats({}, game_events)
-
-    home_team.ft_attempts = utils.get_free_throws_allowed(away_team, player_stats)
-    away_team.ft_attempts = utils.get_free_throws_allowed(home_team, player_stats)
-
-    utils.summarize_results(home_team, player_stats)
-    utils.summarize_results(away_team, player_stats)
-
-    return render_template(
-        'game.html',
-        home_team=home_team,
-        away_team=away_team,
-        game_details=game_details
-    )
-
-
-@app.template_filter('timestamp_to_hours')
-def timestamp_to_hours(s):
-    date = datetime.datetime.fromtimestamp(s / 1000.0)
-    return date.astimezone(timezone('UTC')).strftime('%H:%M')

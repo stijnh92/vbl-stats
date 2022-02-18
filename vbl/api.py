@@ -52,6 +52,7 @@ class API:
             self.BASE_URL + endpoint,
             parameters
         )
+        print(self.BASE_URL + endpoint)
         return response.json()
 
     def get_team(self, team_id: str):
@@ -59,12 +60,12 @@ class API:
             "teamGuid": team_id,
         })[0]
 
-    def get_team_list(self, poule_id: str):
+    def get_team_list_for_poule(self, poule_id: str):
         return self.get(self.TEAM_LIST_ENDPOINT, {
             "pouleguid": poule_id,
         })[0]['teams']
 
-    def get_poule_list(self, region_id: str):
+    def get_poule_list_for_region(self, region_id: str):
         return self.get(self.POULE_LIST_ENDPOINT, {
             "IssRegioguid": region_id,
         })

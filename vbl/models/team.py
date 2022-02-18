@@ -18,6 +18,9 @@ class Team:
         return sum(player.stats.get('ft', 0) for player in self.players)
 
     def ft_percentage(self):
+        if self.ft_attempts == 0:
+            return 0
+
         return round((self.ft_scored / self.ft_attempts) * 100)
 
     def __str__(self):
